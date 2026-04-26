@@ -1,0 +1,38 @@
+#include "gpio.h"
+
+void GPIO_Init_All(void) {
+    RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPBEN | RCC_APB2ENR_AFIOEN;
+
+    // DHT11 (PA0) - 推挽输出
+    GPIOA->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
+    GPIOA->CRL |= GPIO_CRL_MODE0_1;
+
+    // 继电器 (PB12) - 推挽输出
+    GPIOB->CRH &= ~(GPIO_CRH_CNF12 | GPIO_CRH_MODE12);
+    GPIOB->CRH |= GPIO_CRH_MODE12_1;
+    GPIOB->BRR = RELAY_PIN;
+
+    // 蜂鸣器 (PB13) - 推挽输出
+    GPIOB->CRH &= ~(GPIO_CRH_CNF13 | GPIO_CRH_MODE13);
+    GPIOB->CRH |= GPIO_CRH_MODE13_1;
+    GPIOB->BRR = BUZZER_PIN;
+
+    // 按键1 (PB14) - 上拉输入
+    GPIOB->CRH &= ~(GPIO_CRH_CNF14 | GPIO_CRH_MODE14);
+    GPIOB->CRH |= GPIO_CRH_CNF14_1;
+    GPIOB->BSRR = KEY1_PIN;
+
+    // 按键2 (PB15) - 上拉输入
+    GPIOB->CRH &= ~(GPIO_CRH_CNF15 | GPIO_CRH_MODE15);
+    GPIOB->CRH |= GPIO_CRH_CNF15_1;
+    GPIOB->BSRR = KEY2_PIN;
+
+    // NRF CE (PB0) - 推挽输出
+    GPIOB->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
+    GPIOB->CRL |= GPIO_CRL_MODE0_1;
+
+    // NRF IRQ (PB1) - 上拉输入
+    GPIOB->CRL &= ~(GPIO_CRL_CNF1 | GPIO_CRL_MODE1);
+    GPIOB->CRL |= GPIO_CRL_CNF1_1;
+    GPIOB->BSRR = NRF_IRQ_PIN;
+}

@@ -1,0 +1,14 @@
+#include "gpio.h"
+
+void GPIO_Init_All(void) {
+    RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPBEN | RCC_APB2ENR_AFIOEN;
+
+    // NRF CE (PB0) - 推挽输出
+    GPIOB->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
+    GPIOB->CRL |= GPIO_CRL_MODE0_1;
+
+    // NRF IRQ (PB1) - 上拉输入
+    GPIOB->CRL &= ~(GPIO_CRL_CNF1 | GPIO_CRL_MODE1);
+    GPIOB->CRL |= GPIO_CRL_CNF1_1;
+    GPIOB->BSRR = NRF_IRQ_PIN;
+}
