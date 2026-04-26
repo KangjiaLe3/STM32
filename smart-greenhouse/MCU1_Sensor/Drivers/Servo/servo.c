@@ -10,9 +10,9 @@ void Servo_SetAngle(uint8_t servo_num, uint8_t angle) {
     uint16_t pulse = SERVO_MIN_PULSE + (angle * (SERVO_MAX_PULSE - SERVO_MIN_PULSE) / 180);
 
     switch(servo_num) {
-        case 1: TIM1->CCR1 = pulse; break;
-        case 2: TIM1->CCR2 = pulse; break;
-        case 3: TIM1->CCR3 = pulse; break;
+        case 1: TIM2->CCR2 = pulse; break;  // PB3
+        case 2: TIM4->CCR3 = pulse; break;  // PB8
+        case 3: TIM4->CCR4 = pulse; break;  // PB9
     }
 }
 

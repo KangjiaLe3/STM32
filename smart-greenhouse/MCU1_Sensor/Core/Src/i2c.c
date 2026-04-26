@@ -1,38 +1,94 @@
 #include "i2c.h"
+#include "main.h"
+
+#define SDA_H()  GPIOA->BSRR = I2C_SDA_PIN
+#define SDA_L()  GPIOA->BRR = I2C_SDA_PIN
+#define SCL_H()  GPIOA->BSRR = I2C_SCL_PIN
+#define SCL_L()  GPIOA->BRR = I2C_SCL_PIN
+#define SDA_READ() (GPIOA->IDR & I2C_SDA_PIN)
+
+static void I2C_Delay(void) {
+    for(volatile int i = 0; i < 10; i++);
+}
 
 void I2C_Init_All(void) {
-    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN;
-    RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
-
-    // PB6, PB7配置为复用开漏输出
-    GPIOB->CRL &= ~(GPIO_CRL_CNF6 | GPIO_CRL_MODE6);
-    GPIOB->CRL |= GPIO_CRL_CNF6 | GPIO_CRL_MODE6_1;
-    GPIOB->CRL &= ~(GPIO_CRL_CNF7 | GPIO_CRL_MODE7);
-    GPIOB->CRL |= GPIO_CRL_CNF7 | GPIO_CRL_MODE7_1;
-
-    I2C1->CR2 = 36;
-    I2C1->CCR = 180;
-    I2C1->TRISE = 37;
-    I2C1->CR1 |= I2C_CR1_PE;
+    // GPIO已在GPIO_Init_All中初始化
+    SDA_H();
+    SCL_H();
 }
 
 void I2C_Start(void) {
-    I2C1->CR1 |= I2C_CR1_START;
-    while(!(I2C1->SR1 & I2C_SR1_SB));
+    SDA_H();
+    SCL_H();
+    I2C_Delay();
+    SDA_L();
+    I2C_Delay();
+    SCL_L();
 }
 
 void I2C_Stop(void) {
-    I2C1->CR1 |= I2C_CR1_STOP;
+    SDA_L();
+    SCL_L();
+    I2C_Delay();
+    SCL_H();
+    I2C_Delay();
+    SDA_H();
+    I2C_Delay();
+}
+
+void I2C_Ack(void) {
+    SDA_L();
+    I2C_Delay();
+    SCL_H();
+    I2C_Delay();
+    SCL_L();
+    I2C_Delay();
+}
+
+void I2C_NAck(void) {
+    SDA_H();
+    I2C_Delay();
+    SCL_H();
+    I2C_Delay();
+    SCL_L();
+    I2C_Delay();
+}
+
+uint8_t I2C_WaitAck(void) {
+    uint8_t ack;
+    SDA_H();
+    I2C_Delay();
+    SCL_H();
+    I2C_Delay();
+    ack = SDA_READ() ? 1 : 0;
+    SCL_L();
+    return ack;
 }
 
 void I2C_SendByte(uint8_t data) {
-    I2C1->DR = data;
-    while(!(I2C1->SR1 & I2C_SR1_TXE));
+    for(uint8_t i = 0; i < 8; i++) {
+        if(data & 0x80) SDA_H();
+        else SDA_L();
+        I2C_Delay();
+        SCL_H();
+        I2C_Delay();
+        SCL_L();
+        data <<= 1;
+    }
 }
 
 uint8_t I2C_ReceiveByte(uint8_t ack) {
-    if(ack) I2C1->CR1 |= I2C_CR1_ACK;
-    else I2C1->CR1 &= ~I2C_CR1_ACK;
-    while(!(I2C1->SR1 & I2C_SR1_RXNE));
-    return I2C1->DR;
+    uint8_t data = 0;
+    SDA_H();
+    for(uint8_t i = 0; i < 8; i++) {
+        data <<= 1;
+        SCL_H();
+        I2C_Delay();
+        if(SDA_READ()) data |= 1;
+        SCL_L();
+        I2C_Delay();
+    }
+    if(ack) I2C_Ack();
+    else I2C_NAck();
+    return data;
 }

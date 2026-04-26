@@ -16,6 +16,5 @@ void GPIO_Init_All(void);
 void ADC_Init_All(void);
 void TIM_Init_All(void);
 void I2C_Init_All(void);
-void SPI_Init_All(void);
 
 #endif
