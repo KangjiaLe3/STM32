@@ -4,10 +4,9 @@ void GPIO_Init_All(void) {
     RCC->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPBEN | RCC_APB2ENR_AFIOEN;
 
     // 禁用JTAG，保留SWD调试功能
-    // 这样可以释放PB3(JTDO)引脚，同时保留PA13(SWDIO)和PA14(SWCLK)用于调试
     AFIO->MAPR |= AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
 
-    // DHT11 (PA1) - 推挽输出
+    // DHT11 (PA1) - 推挽输出（初始化为输出，读取时会切换为输入）
     GPIOA->CRL &= ~(GPIO_CRL_CNF1 | GPIO_CRL_MODE1);
     GPIOA->CRL |= GPIO_CRL_MODE1_1;
 
@@ -21,15 +20,15 @@ void GPIO_Init_All(void) {
     GPIOB->CRL |= GPIO_CRL_MODE2_1;
     GPIOB->BRR = BUZZER_PIN;
 
-    // 按键1 (PA8) - 上拉输入
+    // 按键1 (PA8) - 上拉输入（修正：必须配置为上拉输入）
     GPIOA->CRH &= ~(GPIO_CRH_CNF8 | GPIO_CRH_MODE8);
-    GPIOA->CRH |= GPIO_CRH_CNF8_1;
-    GPIOA->BSRR = KEY1_PIN;
+    GPIOA->CRH |= GPIO_CRH_CNF8_1;  // 上拉/下拉输入
+    GPIOA->BSRR = KEY1_PIN;          // 使能上拉
 
-    // 按键2 (PA11) - 上拉输入
+    // 按键2 (PA11) - 上拉输入（修正：必须配置为上拉输入）
     GPIOA->CRH &= ~(GPIO_CRH_CNF11 | GPIO_CRH_MODE11);
-    GPIOA->CRH |= GPIO_CRH_CNF11_1;
-    GPIOA->BSRR = KEY2_PIN;
+    GPIOA->CRH |= GPIO_CRH_CNF11_1;  // 上拉/下拉输入
+    GPIOA->BSRR = KEY2_PIN;           // 使能上拉
 
     // NRF CE (PB0) - 推挽输出
     GPIOB->CRL &= ~(GPIO_CRL_CNF0 | GPIO_CRL_MODE0);
