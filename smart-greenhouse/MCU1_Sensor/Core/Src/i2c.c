@@ -1,11 +1,11 @@
 #include "i2c.h"
 #include "main.h"
 
-#define SDA_H()  GPIOA->BSRR = I2C_SDA_PIN
-#define SDA_L()  GPIOA->BRR = I2C_SDA_PIN
-#define SCL_H()  GPIOA->BSRR = I2C_SCL_PIN
-#define SCL_L()  GPIOA->BRR = I2C_SCL_PIN
-#define SDA_READ() (GPIOA->IDR & I2C_SDA_PIN)
+#define SDA_H()  GPIOB->BSRR = I2C_SDA_PIN
+#define SDA_L()  GPIOB->BRR = I2C_SDA_PIN
+#define SCL_H()  GPIOB->BSRR = I2C_SCL_PIN
+#define SCL_L()  GPIOB->BRR = I2C_SCL_PIN
+#define SDA_READ() (GPIOB->IDR & I2C_SDA_PIN)
 
 static void I2C_Delay(void) {
     for(volatile int i = 0; i < 10; i++);

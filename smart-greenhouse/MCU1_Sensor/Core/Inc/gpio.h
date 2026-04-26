@@ -21,14 +21,21 @@
 #define KEY2_PORT       GPIOA
 #define KEY2_PIN        GPIO_Pin_11
 
-// NRF24L01引脚定义 (使用SPI1)
-// 修正：CE和CSN不能用同一个引脚
-#define NRF_CE_PORT     GPIOA
-#define NRF_CE_PIN      GPIO_Pin_3      // 修改为PA3
+// NRF24L01引脚定义
+// SPI1: PA5(SCK), PA6(MISO), PA7(MOSI)
+// 控制引脚：
+#define NRF_CE_PORT     GPIOB
+#define NRF_CE_PIN      GPIO_Pin_0      // 修改为PB0
 #define NRF_CSN_PORT    GPIOA
 #define NRF_CSN_PIN     GPIO_Pin_4      // PA4作为片选
 #define NRF_IRQ_PORT    GPIOB
 #define NRF_IRQ_PIN     GPIO_Pin_1
+
+// I2C引脚定义（软件I2C，用于SCD40）
+#define I2C_SDA_PORT    GPIOB
+#define I2C_SDA_PIN     GPIO_Pin_6
+#define I2C_SCL_PORT    GPIOB
+#define I2C_SCL_PIN     GPIO_Pin_7
 
 void GPIO_Init_All(void);
 
