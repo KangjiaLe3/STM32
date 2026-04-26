@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+// 强制1字节对齐，确保跨MCU通信时结构体布局一致
+#pragma pack(1)
+
 // 数据包结构定义
 typedef struct {
     float temperature;      // 温度 (°C)
@@ -13,8 +16,15 @@ typedef struct {
     uint8_t relay_state;    // 继电器状态 (0/1)
     uint8_t servo_state;    // 舵机状态 (0/1)
     uint8_t buzzer_state;   // 蜂鸣器状态 (0/1)
+    uint8_t control_mode;   // 控制模式 (0=自动, 1=手动)
 } SensorData_t;
 
+#pragma pack()
+
 #define DATA_PACKET_SIZE sizeof(SensorData_t)
+
+// 控制模式定义
+#define MODE_AUTO   0
+#define MODE_MANUAL 1
 
 #endif
