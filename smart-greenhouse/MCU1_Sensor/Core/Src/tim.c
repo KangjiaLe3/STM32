@@ -1,11 +1,16 @@
 #include "tim.h"
 
-// KPZ32使用TIM2和TIM4来控制舵机
-// PB3 - TIM2_CH2
-// PB8 - TIM4_CH3
-// PB9 - TIM4_CH4
+// 禁用JTAG，保留SWD调试功能
+void DisableJTAG(void) {
+    RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+    // 设置为SW-DP模式，禁用JTAG，释放PB3/PB4/PA15引脚
+    AFIO->MAPR |= AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
+}
 
 void TIM_Init_All(void) {
+    // 先禁用JTAG，释放PB3引脚
+    DisableJTAG();
+
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN | RCC_APB1ENR_TIM4EN;
     RCC->APB2ENR |= RCC_APB2ENR_IOPBEN | RCC_APB2ENR_AFIOEN;
 
@@ -20,8 +25,8 @@ void TIM_Init_All(void) {
     GPIOB->CRH |= GPIO_CRH_CNF9_1 | GPIO_CRH_MODE9_1;
 
     // TIM2配置: 50Hz PWM (20ms周期)
-    TIM2->PSC = 72 - 1;
-    TIM2->ARR = 20000 - 1;
+    TIM2->PSC = 72 - 1;          // 72MHz / 72 = 1MHz
+    TIM2->ARR = 20000 - 1;       // 1MHz / 20000 = 50Hz
     TIM2->CCMR1 |= TIM_CCMR1_OC2M_2 | TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2PE;
     TIM2->CCER |= TIM_CCER_CC2E;
     TIM2->CR1 |= TIM_CR1_CEN;

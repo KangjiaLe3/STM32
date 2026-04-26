@@ -22,11 +22,11 @@
 #define KEY2_PIN        GPIO_Pin_11
 
 // NRF24L01引脚定义 (使用SPI1)
-// 需要根据实际连接配置
+// 修正：CE和CSN不能用同一个引脚
 #define NRF_CE_PORT     GPIOA
-#define NRF_CE_PIN      GPIO_Pin_4
+#define NRF_CE_PIN      GPIO_Pin_3      // 修改为PA3
 #define NRF_CSN_PORT    GPIOA
-#define NRF_CSN_PIN     GPIO_Pin_4
+#define NRF_CSN_PIN     GPIO_Pin_4      // PA4作为片选
 #define NRF_IRQ_PORT    GPIOB
 #define NRF_IRQ_PIN     GPIO_Pin_1
 
